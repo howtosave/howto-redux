@@ -15,4 +15,7 @@ yarn add -D @nrwl/react
 # create a react app
 nx generate @nrwl/react:application redux-basic --e2eTestRunner=none --style=css --no-interactive --dry-run
 
+# generate a redux slice
+nx g @nrwl/react:redux --project=redux-basic books --dry-run
+
 ```
