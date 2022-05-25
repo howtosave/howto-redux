@@ -9,5 +9,10 @@ yarn create nx-workspace howto-redux \
   packageManager=yarn \
   preset=ts
 
+# add plugins
+yarn add -D @nrwl/react
+
+# create a react app
+nx generate @nrwl/react:application redux-basic --e2eTestRunner=none --style=css --no-interactive --dry-run
 
 ```
