@@ -1,6 +1,6 @@
 {
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "packages/redux-basic/src",
+  "sourceRoot": "packages/redux-thunk/src",
   "projectType": "application",
   "targets": {
     "build": {
@@ -9,17 +9,17 @@
       "defaultConfiguration": "production",
       "options": {
         "compiler": "babel",
-        "outputPath": "dist/packages/redux-basic",
-        "index": "packages/redux-basic/src/index.html",
+        "outputPath": "dist/packages/redux-thunk",
+        "index": "packages/redux-thunk/src/index.html",
         "baseHref": "/",
-        "main": "packages/redux-basic/src/main.tsx",
-        "polyfills": "packages/redux-basic/src/polyfills.ts",
-        "tsConfig": "packages/redux-basic/tsconfig.app.json",
+        "main": "packages/redux-thunk/src/main.tsx",
+        "polyfills": "packages/redux-thunk/src/polyfills.ts",
+        "tsConfig": "packages/redux-thunk/tsconfig.app.json",
         "assets": [
-          "packages/redux-basic/src/favicon.ico",
-          "packages/redux-basic/src/assets"
+          "packages/redux-thunk/src/favicon.ico",
+          "packages/redux-thunk/src/assets"
         ],
-        "styles": ["packages/redux-basic/src/styles.css"],
+        "styles": ["packages/redux-thunk/src/styles.css"],
         "scripts": [],
         "webpackConfig": "@nrwl/react/plugins/webpack"
       },
@@ -33,8 +33,8 @@
         "production": {
           "fileReplacements": [
             {
-              "replace": "packages/redux-basic/src/environments/environment.ts",
-              "with": "packages/redux-basic/src/environments/environment.prod.ts"
+              "replace": "packages/redux-thunk/src/environments/environment.ts",
+              "with": "packages/redux-thunk/src/environments/environment.prod.ts"
             }
           ],
           "optimization": true,
@@ -50,15 +50,15 @@
       "executor": "@nrwl/web:dev-server",
       "defaultConfiguration": "development",
       "options": {
-        "buildTarget": "redux-basic:build",
+        "buildTarget": "redux-thunk:build",
         "hmr": true
       },
       "configurations": {
         "development": {
-          "buildTarget": "redux-basic:build:development"
+          "buildTarget": "redux-thunk:build:development"
         },
         "production": {
-          "buildTarget": "redux-basic:build:production",
+          "buildTarget": "redux-thunk:build:production",
           "hmr": false
         }
       }
@@ -67,14 +67,14 @@
       "executor": "@nrwl/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": ["packages/redux-basic/**/*.{ts,tsx,js,jsx}"]
+        "lintFilePatterns": ["packages/redux-thunk/**/*.{ts,tsx,js,jsx}"]
       }
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/packages/redux-basic"],
+      "outputs": ["coverage/packages/redux-thunk"],
       "options": {
-        "jestConfig": "packages/redux-basic/jest.config.ts",
+        "jestConfig": "packages/redux-thunk/jest.config.ts",
         "passWithNoTests": true
       }
     }

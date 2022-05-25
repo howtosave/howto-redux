@@ -5,7 +5,7 @@ import NxWelcome from './nx-welcome';
 export function App() {
   return (
     <>
-      <NxWelcome title="redux-basic" />
+      <NxWelcome title="redux-thunk" />
       <div />
     </>
   );

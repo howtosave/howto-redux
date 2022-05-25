@@ -14,7 +14,11 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
-    "paths": {}
+    "paths": {
+      "@howto-redux/redux-fundamental-demo": [
+        "packages/redux-fundamental-demo/src/index.ts"
+      ]
+    }
   },
   "exclude": ["node_modules", "tmp"]
 }

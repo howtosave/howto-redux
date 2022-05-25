@@ -5,7 +5,9 @@ import {
   createSlice,
   EntityState,
   PayloadAction,
+  PrepareAction,
 } from '@reduxjs/toolkit';
+import type { AppState } from './store';
 
 export const BOOKS_FEATURE_KEY = 'books';
 
@@ -17,10 +19,13 @@ export interface BooksEntity {
 }
 
 export interface BooksState extends EntityState<BooksEntity> {
-  loadingStatus: 'not loaded' | 'loading' | 'loaded' | 'error';
-  error: string;
+  loading: 'idle' | 'pending' | 'loaded' | 'error';
+  error?: string;
+  currentRequestId?: string;
 }
 
+// generates a set of prebuilt reducers and selectors 
+// for performing CRUD operations
 export const booksAdapter = createEntityAdapter<BooksEntity>();
 
 /**
@@ -42,19 +47,20 @@ export const booksAdapter = createEntityAdapter<BooksEntity>();
  */
 export const fetchBooks = createAsyncThunk(
   'books/fetchStatus',
-  async (_, thunkAPI) => {
-    /**
-     * Replace this with your custom fetch call.
-     * For example, `return myApi.getBookss()`;
-     * Right now we just return an empty array.
-     */
+  async (_, { getState, requestId }) => {
+    const { currentRequestId, loading } = (getState() as AppState)[BOOKS_FEATURE_KEY];
+    if (loading !== 'pending' || requestId !== currentRequestId) {
+      return;
+    }
     return Promise.resolve([]);
   }
 );
 
 export const initialBooksState: BooksState = booksAdapter.getInitialState({
-  loadingStatus: 'not loaded',
-  error: null,
+  loading: 'idle',
+  entities: {},
+  currentRequestId: undefined,
+  error: undefined,
 });
 
 export const booksSlice = createSlice({
@@ -67,18 +73,20 @@ export const booksSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchBooks.pending, (state: BooksState) => {
-        state.loadingStatus = 'loading';
+      .addCase(fetchBooks.pending, (state, action) => {
+        if (state.loading === 'idle') {
+          state.loading = 'pending';
+          state.currentRequestId = action.meta.requestId;
+        }
       })
       .addCase(
-        fetchBooks.fulfilled,
-        (state: BooksState, action: PayloadAction<BooksEntity[]>) => {
-          booksAdapter.setAll(state, action.payload);
-          state.loadingStatus = 'loaded';
+        fetchBooks.fulfilled, (state, action) => {
+          booksAdapter.setAll(state, action.payload || []);
+          state.loading = 'loaded';
         }
       )
       .addCase(fetchBooks.rejected, (state: BooksState, action) => {
-        state.loadingStatus = 'error';
+        state.loading = 'error';
         state.error = action.error.message;
       });
   },
@@ -125,7 +133,7 @@ export const booksActions = booksSlice.actions;
  */
 const { selectAll, selectEntities } = booksAdapter.getSelectors();
 
-export const getBooksState = (rootState: unknown): BooksState =>
+export const getBooksState = (rootState: AppState): BooksState =>
   rootState[BOOKS_FEATURE_KEY];
 
 export const selectAllBooks = createSelector(getBooksState, selectAll);

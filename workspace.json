@@ -2,6 +2,7 @@
   "$schema": "./node_modules/nx/schemas/workspace-schema.json",
   "version": 2,
   "projects": {
-    "redux-basic": "packages/redux-basic"
+    "redux-fundamental-demo": "packages/redux-fundamental-demo",
+    "redux-thunk": "packages/redux-thunk"
   }
 }
