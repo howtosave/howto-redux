@@ -35,14 +35,19 @@ let gid = 1;
 }));
  */
 class MockDb {
-  public mockData: Post[];
+  public mockData = [] as Post[];
 
   constructor() {
+    this.reset();
+  }
+
+  reset() {
     for (let i = 0; i < 10; i ++) {
-      this.mockData.push({
+      this.mockData.push(
+      Object.assign({}, {
         id: gid++,
         name: `post ${gid}`,
-      });
+      }));
     }
   }
 
@@ -61,7 +66,7 @@ class MockDb {
   }
   
   updatePost(input: PostUpdateDto): Post | undefined {
-    let post = this.getPost(input.id);
+    const post = this.getPost(input.id);
     if (!post) return undefined;
     Object.assign(post, input);
     return post;
@@ -124,6 +129,7 @@ export const postApi = createApi({
     }),
     addPost: build.mutation<Post, PostCreateDto>({
       queryFn(arg) {
+        mockDb.reset();
         return { data: mockDb.createPost(arg) }
       },
       // Invalidates all Post-type queries providing the `LIST` id - after all, depending of the sort order,
@@ -131,7 +137,11 @@ export const postApi = createApi({
       invalidatesTags: [{ type: 'Posts', id: 'LIST' }],
     }),
     getPost: build.query<Post, number>({
-      queryFn: (id) => mockDb.hasPost(id) ? { data: mockDb.getPost(id) as Post } : { error: { status: 404, data: 'NotFound' } },
+      queryFn: (id) => {
+        return mockDb.hasPost(id) 
+          ? { data: mockDb.getPost(id) as Post } 
+          : { error: { status: 404, data: 'NotFound' } };
+      },
       providesTags: (result, error, id) => [{ type: 'Posts', id }],
     }),
     updatePost: build.mutation<Post, PostUpdateDto>({
