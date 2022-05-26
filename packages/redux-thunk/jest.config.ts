@@ -8,4 +8,5 @@ export default {
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
   coverageDirectory: '../../coverage/packages/redux-thunk',
+  "setupFilesAfterEnv": ["./jest-setup.ts"],
 };
