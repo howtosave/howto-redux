@@ -80,7 +80,7 @@ const counterSlice = createSlice({
   },
 });
 
-const counterActions = counterSlice.actions;
+//const counterActions = counterSlice.actions;
 
 //
 // test
