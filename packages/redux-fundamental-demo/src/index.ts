@@ -1,1 +1,1 @@
-export * from './lib/redux-fundamental-demo';
+export default () => {};
