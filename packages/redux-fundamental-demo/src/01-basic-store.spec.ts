@@ -1,38 +1,53 @@
+import React from 'react';
 import { Reducer, createStore } from 'redux';
+import { renderHook } from '@testing-library/react-hooks';
+import { Provider, useDispatch } from "react-redux";
 
-type AppState = {
+export type AppState = {
   value: number;
 };
 
-type ActionType = "incremented" | "decremented";
+export type ActionType = "increment" | "decrement";
 
-type AppAction = {
+export type AppAction = {
   type: ActionType;
   payload?: number;
 };
 
-const initialState: AppState = {
+export type AppActions = {
+  [name in ActionType]: (payload?: AppAction['payload']) => {
+    type: name,
+    payload
+  };
+};
+
+export const initialState: AppState = {
   value: 0
 };
 
 //
 // reducer
 //
-const counterReducer: Reducer<AppState, AppAction> = (state = initialState, action) => {
+export const counterReducer: Reducer<AppState, AppAction> = (state = initialState, action) => {
   switch (action.type) {
-    case "incremented":
+    case "increment":
       return { ...state, value: state.value + (action.payload ?? 1) };
-    case "decremented":
+    case "decrement":
       return { ...state, value: state.value - (action.payload ?? 1) };
     default:
       return state;
   }
-}
+};
+
+export const actions: AppActions = {
+  increment: (payload) => ({ type: 'increment', payload }),
+  decrement: (payload) => ({ type: 'decrement', payload }),
+};
 
 //
 // store
 //
-const store = createStore(counterReducer);
+export const store = createStore(counterReducer);
 
 //
 // test
@@ -41,19 +56,46 @@ test('# basic action', () => {
   let state = store.getState();
   expect(state).toEqual({value: 0});
 
-  store.dispatch({ type: "incremented" });
+  store.dispatch(actions.increment());
   state = store.getState();
   expect(state).toEqual({value: 1});
 
-  store.dispatch({ type: "incremented", payload: 2 });
+  store.dispatch(actions.increment(2));
   state = store.getState();
   expect(state).toEqual({value: 3});
 
-  store.dispatch({ type: "decremented", payload: 2 });
+  store.dispatch(actions.decrement(2));
   state = store.getState();
   expect(state).toEqual({value: 1});
 
-  store.dispatch({ type: "decremented" });
+  store.dispatch(actions.decrement());
   state = store.getState();
   expect(state).toEqual({value: 0});
+});
+
+export const wrapper = (props: {children: React.ReactNode}) => React.createElement(
+  Provider,
+  { store, ...props }
+);
+
+test('# with render hook', async () => {
+  // initial state
+  expect(store.getState()).toEqual({value: 0});
+  let result;
+  ({ result } = renderHook(() => useDispatch()({ type: "increment" }), { wrapper: wrapper }));
+  expect(result.current).toEqual({ "type": "increment" });
+  // after increment
+  expect(store.getState()).toEqual({value: 1});
+
+  ({ result } = renderHook(() => useDispatch()(actions.increment(2)), { wrapper: wrapper }));
+  // after increment
+  expect(store.getState()).toEqual({value: 3});
+
+  ({ result } = renderHook(() => useDispatch()(actions.decrement(2)), { wrapper: wrapper }));
+  // after decrement
+  expect(store.getState()).toEqual({value: 1});
+
+  ({ result } = renderHook(() => useDispatch()({ type: "decrement" }), { wrapper: wrapper }));
+  // after decrement
+  expect(store.getState()).toEqual({value: 0});
 });

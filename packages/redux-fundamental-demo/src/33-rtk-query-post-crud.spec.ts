@@ -82,7 +82,6 @@ class MockDb {
 
 const mockDb = new MockDb();
 
-
 /**
  * Type predicate to narrow an unknown error to `FetchBaseQueryError`
  */
