@@ -2,6 +2,7 @@ import React from 'react';
 import { Reducer, createStore } from 'redux';
 import { renderHook } from '@testing-library/react-hooks';
 import { Provider, useDispatch } from "react-redux";
+import { PayloadAction } from '@reduxjs/toolkit';
 
 export type AppState = {
   value: number;
@@ -13,6 +14,9 @@ export type AppAction = {
   type: ActionType;
   payload?: number;
 };
+/* <==>
+export type AppAction = PayloadAction<number, ActionType>;
+*/
 
 export type AppActions = {
   [name in ActionType]: (payload?: AppAction['payload']) => {
@@ -53,14 +57,22 @@ export const store = createStore(counterReducer);
 // test
 //
 test('# basic action', () => {
+  // typify the result of store.dispatch
+  let res: ReturnType<typeof store.dispatch>;
   let state = store.getState();
   expect(state).toEqual({value: 0});
 
-  store.dispatch(actions.increment());
+  // typify store.dispatch at 'dispatch' generic function
+  res = store.dispatch<AppAction>(actions.increment());
+  expect(res.type).toBe('increment');
+  expect(res.payload).toBe(undefined);
+
   state = store.getState();
   expect(state).toEqual({value: 1});
 
-  store.dispatch(actions.increment(2));
+  res = store.dispatch(actions.increment(2));
+  expect(res.payload).toBe(2);
+
   state = store.getState();
   expect(state).toEqual({value: 3});
 
@@ -83,7 +95,8 @@ test('# with render hook', async () => {
   expect(store.getState()).toEqual({value: 0});
   let result;
   ({ result } = renderHook(() => useDispatch()({ type: "increment" }), { wrapper: wrapper }));
-  expect(result.current).toEqual({ "type": "increment" });
+  expect(result.current.type).toBe('increment');
+  expect(result.current.payload).toBe(undefined);
   // after increment
   expect(store.getState()).toEqual({value: 1});
 
