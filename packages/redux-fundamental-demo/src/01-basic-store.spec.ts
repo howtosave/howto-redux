@@ -1,8 +1,5 @@
-import React from 'react';
-import { Reducer, createStore } from 'redux';
-import { renderHook } from '@testing-library/react-hooks';
-import { Provider, useDispatch } from "react-redux";
-import { PayloadAction } from '@reduxjs/toolkit';
+import { Reducer, createStore, Dispatch, Action } from 'redux';
+//import { PayloadAction } from '@reduxjs/toolkit';
 
 export type AppState = {
   value: number;
@@ -25,6 +22,13 @@ export type AppActions = {
   };
 };
 
+export const actions: AppActions = {
+  increment: (payload) => ({ type: 'increment', payload }),
+  decrement: (payload) => ({ type: 'decrement', payload }),
+};
+
+export type IncrementDispatch = () => AppState;
+
 export const initialState: AppState = {
   value: 0
 };
@@ -41,11 +45,6 @@ export const counterReducer: Reducer<AppState, AppAction> = (state = initialStat
     default:
       return state;
   }
-};
-
-export const actions: AppActions = {
-  increment: (payload) => ({ type: 'increment', payload }),
-  decrement: (payload) => ({ type: 'decrement', payload }),
 };
 
 //
@@ -85,30 +84,3 @@ test('# basic action', () => {
   expect(state).toEqual({value: 0});
 });
 
-export const wrapper = (props: {children: React.ReactNode}) => React.createElement(
-  Provider,
-  { store, ...props }
-);
-
-test('# with render hook', async () => {
-  // initial state
-  expect(store.getState()).toEqual({value: 0});
-  let result;
-  ({ result } = renderHook(() => useDispatch()({ type: "increment" }), { wrapper: wrapper }));
-  expect(result.current.type).toBe('increment');
-  expect(result.current.payload).toBe(undefined);
-  // after increment
-  expect(store.getState()).toEqual({value: 1});
-
-  ({ result } = renderHook(() => useDispatch()(actions.increment(2)), { wrapper: wrapper }));
-  // after increment
-  expect(store.getState()).toEqual({value: 3});
-
-  ({ result } = renderHook(() => useDispatch()(actions.decrement(2)), { wrapper: wrapper }));
-  // after decrement
-  expect(store.getState()).toEqual({value: 1});
-
-  ({ result } = renderHook(() => useDispatch()({ type: "decrement" }), { wrapper: wrapper }));
-  // after decrement
-  expect(store.getState()).toEqual({value: 0});
-});

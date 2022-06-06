@@ -4,8 +4,8 @@ import {
   AppActions,
   store,
   actions,
-  wrapper,
 } from './01-basic-store.spec';
+import { wrapper } from './01-basic-store-with-react-hook.spec';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { connect, ConnectedProps } from "react-redux";
 
@@ -40,7 +40,7 @@ const ConnectedApp = connector(App);
 //
 // test
 //
-test('# with react', () => {
+test('# with redux connect', () => {
   const { baseElement } = render(<ConnectedApp actions={actions} />, { wrapper });
   expect(baseElement).toBeTruthy();
 
@@ -102,7 +102,7 @@ const AppMDP: React.FC<AppMDPProps> = ({
 
 const ConnectedAppMDP = connectorMDP(AppMDP);
 
-test('# with react MDP', () => {
+test('# with redux connect mapping Dispatch To Props', () => {
   const { baseElement } = render(<ConnectedAppMDP />, { wrapper });
   expect(baseElement).toBeTruthy();
 });
