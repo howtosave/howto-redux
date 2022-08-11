@@ -57,3 +57,12 @@ test('# basic action', () => {
   state = store.getState();
   expect(state).toEqual({value: 0});
 });
+
+//
+// Types
+//
+
+type StoreStateType = ReturnType<typeof store.getState>
+type StoreDispatchType = typeof store.dispatch;
+type StoreSubscribeType = typeof store.subscribe;
+

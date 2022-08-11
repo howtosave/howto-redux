@@ -1,4 +1,5 @@
 import { CaseReducer, configureStore, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 
 type AppState = {
   value: number;
@@ -70,3 +71,20 @@ test('# basic action', () => {
   state = store.getState();
   expect(state.counter).toEqual({value: 0});
 });
+
+const store = configureStore({
+  reducer: {
+     [counterSlice.name]: counterSlice.reducer,
+  },
+});
+type StoreRootState = ReturnType<typeof store.getState>
+type StoreDispatchType = typeof store.dispatch;
+type StoreSubscribeType = typeof store.subscribe;
+
+type StoreReducerType = typeof counterSlice.reducer;
+type StoreReducerActionType = typeof counterSlice.actions;
+
+// Use throughout your app instead of plain `useDispatch` and `useSelector`
+export const useAppDispatch = () => useDispatch<StoreDispatchType>();
+export const useAppSelector: TypedUseSelectorHook<StoreRootState> = useSelector;
+export const useCounterSelector: TypedUseSelectorHook<StoreRootState['counter']> = useSelector;

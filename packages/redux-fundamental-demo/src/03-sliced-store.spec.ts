@@ -1,5 +1,6 @@
 import { Reducer, combineReducers } from 'redux';
 import { configureStore } from '@reduxjs/toolkit';
+import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 
 //
 // counter
@@ -125,3 +126,19 @@ test('# basic action', () => {
   state = store.getState();
   expect(state.array).toEqual({array: []});
 });
+
+//
+// Types
+//
+
+type StoreRootState = ReturnType<typeof store.getState>
+type StoreDispatchType = typeof store.dispatch;
+type StoreSubscribeType = typeof store.subscribe;
+
+// same as 'StoreRootState'
+type StoreRootStateReducer = ReturnType<typeof combinedRootReducer>
+
+// Use throughout your app instead of plain `useDispatch` and `useSelector`
+export const useAppDispatch = () => useDispatch<StoreDispatchType>();
+export const useAppSelector: TypedUseSelectorHook<StoreRootState> = useSelector;
+export const useCounterSelector: TypedUseSelectorHook<StoreRootState['counter']> = useSelector;

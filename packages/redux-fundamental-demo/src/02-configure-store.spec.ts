@@ -1,5 +1,6 @@
 import { Reducer } from 'redux';
 import { configureStore } from '@reduxjs/toolkit';
+import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 
 type AppState = {
   value: number;
@@ -60,3 +61,15 @@ test('# basic action', () => {
   state = store.getState();
   expect(state).toEqual({value: 0});
 });
+
+//
+// Types
+//
+
+type StoreStateType = ReturnType<typeof store.getState>
+type StoreDispatchType = typeof store.dispatch;
+type StoreSubscribeType = typeof store.subscribe;
+
+// Use throughout your app instead of plain `useDispatch` and `useSelector`
+export const useAppDispatch = () => useDispatch<StoreDispatchType>();
+export const useAppSelector: TypedUseSelectorHook<StoreStateType> = useSelector;
