@@ -35,7 +35,7 @@ const counterReducer: Reducer<AppState, AppAction> = (state = initialState, acti
 //
 test('# basic action', () => {
   const mockFn = jest.fn();
-  const enhancer: StoreEnhancer = createStore => (reducer, initialState) => {
+  const enhancer: StoreEnhancer = (createStore) => (reducer, initialState) => {
     mockFn();
     return createStore(reducer, initialState);
   };

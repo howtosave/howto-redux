@@ -41,15 +41,17 @@ const counterSlice = createSlice({
   },
 });
 
+
+const store = configureStore({
+  reducer: {
+     [counterSlice.name]: counterSlice.reducer,
+  },
+});
+
 //
 // test
 //
 test('# basic action', () => {
-  const store = configureStore({
-    reducer: {
-       [counterSlice.name]: counterSlice.reducer,
-    },
-  });
   const { actions } = counterSlice;
 
   let state = store.getState();
@@ -72,11 +74,6 @@ test('# basic action', () => {
   expect(state.counter).toEqual({value: 0});
 });
 
-const store = configureStore({
-  reducer: {
-     [counterSlice.name]: counterSlice.reducer,
-  },
-});
 type StoreRootState = ReturnType<typeof store.getState>
 type StoreDispatchType = typeof store.dispatch;
 type StoreSubscribeType = typeof store.subscribe;
