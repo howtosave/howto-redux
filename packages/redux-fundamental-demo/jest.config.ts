@@ -7,5 +7,6 @@ export default {
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
   coverageDirectory: '../../coverage/packages/redux-fundamental-demo',
-  "setupFilesAfterEnv": ["./jest-setup.ts"],
+  setupFilesAfterEnv: ['./jest-setup.ts'],
+  testEnvironment: 'jsdom',
 };

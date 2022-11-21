@@ -5,14 +5,16 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 type AppState = {
   value: number;
 };
+type PayloadType = number;
 
-type ActionType = "incremented" | "decremented";
+//
+// actions
+//
+const reset = createAction('counter/reset');
+const increment = createAction<PayloadType>('counter/increment');
+const decrement = createAction<PayloadType>('counter/decrement');
 
-type AppAction = {
-  type: ActionType;
-  payload?: number;
-};
-
+// initial state
 const initialState: AppState = {
   value: 0,
 };
@@ -20,17 +22,32 @@ const initialState: AppState = {
 //
 // reducer
 //
-const counterReducer: Reducer<AppState, AppAction> = (state = initialState, action) => {
-  switch (action.type) {
-    case "incremented":
-      return { ...state, value: state.value + (action.payload ?? 1) };
-    case "decremented":
-      return { ...state, value: state.value - (action.payload ?? 1) };
-    default:
-      return state;
-  }
-}
+const counterReducer = createReducer<AppState>(initialState, (builder) => {
+  builder
+  .addCase(reset, () => initialState)
+  .addCase(increment, (state, action) => {
+    state.value += action.payload ?? 1;
+  })
+  .addCase(decrement, (state, action) => {
+    state.value -= action.payload ?? 1;
+  })
+  .addMatcher((action) => {
+    return typeof action.payload === 'number';
+  }, (state, action) => {
+    // no chnages
+  })
+  .addDefaultCase((state, action) => {
+    // no changes
+  });
+});
 
+//
+// reducer types
+//
+//type ReducerState = ReturnType<typeof counterReducer>;
+/* <==>
+This type should same as 'AppState' above
+*/
 //
 // store
 //
@@ -39,25 +56,39 @@ const store = configureStore({
 });
 
 //
+// store types
+//
+type AppDispatch = typeof store.dispatch;
+
+//type AppStateType = ReturnType<typeof store.getState>;
+/* <==>
+This type should same as 'AppState' above
+*/
+
+//
 // test
 //
 test('# basic action', () => {
   let state = store.getState();
   expect(state).toEqual({value: 0});
 
-  store.dispatch({ type: "incremented" });
+  //let res: AppDispatch;
+
+  let res = store.dispatch<ReturnType<typeof increment>>({ type: increment.type, payload: undefined });
   state = store.getState();
   expect(state).toEqual({value: 1});
 
-  store.dispatch({ type: "incremented", payload: 2 });
+  res = store.dispatch<ReturnType<typeof increment>>(increment(2));
+  expect(res.type).toBe('counter/increment');
+  expect(res.payload).toBe(2);
   state = store.getState();
   expect(state).toEqual({value: 3});
 
-  store.dispatch({ type: "decremented", payload: 2 });
+  res = store.dispatch(decrement(2));
   state = store.getState();
   expect(state).toEqual({value: 1});
 
-  store.dispatch({ type: "decremented" });
+  store.dispatch({ type: decrement.type });
   state = store.getState();
   expect(state).toEqual({value: 0});
 });
